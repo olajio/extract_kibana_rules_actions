@@ -1,33 +1,10 @@
-The short answer is: **no**, there’s no out-of-the-box way in Kibana to exclude certain node types (like *frozen* nodes) from the built‑in **Disk usage** alert. That alert is triggered per node based purely on its disk usage metrics, regardless of node role. ([Discuss the Elastic Stack][1])
-
----
-
-### 🚫 Why Frozen Nodes Always Appear
-
-Historically, users have requested the ability to suppress alerts for frozen node roles, but it's not currently supported. Even frozen nodes—which hold read-only, infrequently accessed data—show up and trigger alerts based on disk thresholds. ([GitHub][2], [GitHub][3])
-
----
-
-### ✅ Workarounds
-
-#### 1. Add a filter in your **Alert action**
-
-You can use the alert action’s context variables and conditions:
-
-```mustache
 {% if context.node.split(':')[0] not matches '_frozen' %}
 Disk usage on {{context.node.split(':')[0]}} is {{context.node.split(':')[1]}}% — Please check.
 {% endif %}
-```
 
-This checks the `node` field and only allows non-frozen nodes through, assuming your naming convention includes `_frozen`.
-You might need to adjust based on how your nodes are named.
 
-#### 2. Build a Custom Rule
 
-If filtering in the action message isn't flexible enough, consider creating a **custom Kibana alert** using the monitoring indices:
 
-```json
 {
   "index": ".monitoring-es-*",
   "filter": [
@@ -36,30 +13,3 @@ If filtering in the action message isn't flexible enough, consider creating a **
   ],
   "actions": [...]
 }
-```
-
-This way, you're directly querying for disk usage **excluding frozen node roles**. It's a more manual path, but gives you full control.
-
----
-
-### 🔧 What You Can Do Now
-
-* **Option A:** Modify the existing Disk Usage rule’s action message with the template logic to skip unwanted nodes.
-* **Option B:** Build your own **Elasticsearch query rule** that explicitly filters out frozen role nodes.
-
----
-
-### TL;DR
-
-* You **cannot** configure built-in Disk Usage alerts to ignore frozen nodes.
-* Use template logic in alert actions to skip them at notification time.
-* For full exclusion, build a custom rule that filters out nodes with the `frozen` role in its query. ([Discuss the Elastic Stack][1], [Discuss the Elastic Stack][4], [Discuss the Elastic Stack][5], [elastic.co][6])
-
-Let me know if you'd like help building the template or crafting the custom rule!
-
-[1]: https://discuss.elastic.co/t/stack-monitoring-alerts-disk-usage-how-to-get-the-node-name-only/335012?utm_source=chatgpt.com "Stack Monitoring Alerts Disk Usage, how to get the node name only?"
-[2]: https://github.com/elastic/kibana/issues/108142?utm_source=chatgpt.com "[StackMonitoring][Rules and Alerting] Frozen nodes should not ..."
-[3]: https://github.com/elastic/kibana/issues/105659?utm_source=chatgpt.com "[Stack Monitoring] Alerts firing for default values #105659 - GitHub"
-[4]: https://discuss.elastic.co/t/disabling-shard-allocation-not-working-as-expected/341135?utm_source=chatgpt.com "Disabling shard allocation not working as expected - Elastic Discuss"
-[5]: https://discuss.elastic.co/t/over-110-detections-crash-siem-application-and-kibana-plugins/295830?utm_source=chatgpt.com "Over 110 detections crash SIEM application and Kibana plugins"
-[6]: https://www.elastic.co/docs/troubleshoot/elasticsearch/decrease-disk-usage-data-node?utm_source=chatgpt.com "Decrease the disk usage of data nodes | Elastic Docs"
