@@ -1,40 +1,39 @@
 import json
 import csv
-import sys
 
-def extract_rules_to_csv(input_json, output_csv):
-    # 1. Load JSON file
-    with open(input_json, 'r') as f:
-        data = json.load(f)
+# Input and output files are hardcoded
+INPUT_FILE = 'response.json'
+OUTPUT_FILE = 'rules_actions.csv'
 
-    # 2. Safely navigate into the "data" list
+def extract_rules_to_csv():
+    # 1. Load the JSON response from Kibana API
+    with open(INPUT_FILE, 'r', encoding='utf-8') as f:
+        data = json.load(f)  # May throw if response.json isn't valid
+    
+    # 2. Get the list of rules
     rules = data.get("data", [])
-    if not rules:
-        print("No 'data' array found in JSON.")
+    if not isinstance(rules, list):
+        print("ERROR: 'data' field is missing or not a list.")
         return
-
-    # 3. Prepare CSV
-    with open(output_csv, 'w', newline='', encoding='utf-8') as csvfile:
+    
+    # 3. Open CSV for writing
+    with open(OUTPUT_FILE, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(["name", "actions"])
-
-        # 4. Iterate through rules
+        writer.writerow(["name", "actions"])  # Header
+        
+        # 4. Iterate over each rule entry
         for entry in rules:
-            alert = entry.get("alert", {})
-            attrs = alert.get("attributes", {})
+            # Safely extract nested fields
+            attrs = entry.get("alert", {}).get("attributes", {})
             name = attrs.get("name", "")
-
-            # 5. Extract actions, serialize as JSON string
-            actions_list = attrs.get("actions", [])
-            actions_str = json.dumps(actions_list, ensure_ascii=False)
-
+            actions = attrs.get("actions", [])
+            
+            # Convert actions list to a JSON string for storage in CSV
+            actions_str = json.dumps(actions, ensure_ascii=False)
+            
             writer.writerow([name, actions_str])
-
-    print(f"✅ Extracted {len(rules)} rules to '{output_csv}'")
+    
+    print(f"✅ Successfully wrote {len(rules)} rules to '{OUTPUT_FILE}'")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python extract_rules.py <input.json> <output.csv>")
-        sys.exit(1)
-
-    extract_rules_to_csv(sys.argv[1], sys.argv[2])
+    extract_rules_to_csv()
