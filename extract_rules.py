@@ -1,37 +1,40 @@
 import json
 import csv
+import sys
 
-def extract_rules_to_csv(input_file, output_csv):
-    # Read the JSON response file
-    with open(input_file, 'r', encoding='utf-8') as f:
+def extract_rules_to_csv(input_json, output_csv):
+    # 1. Load JSON file
+    with open(input_json, 'r') as f:
         data = json.load(f)
 
-    # Ensure expected structure
-    # Assuming each rule is under data['data'] or 'results'—adjust if different
-    rules = data.get('data') or data.get('results') or data.get('rules') or []
+    # 2. Safely navigate into the "data" list
+    rules = data.get("data", [])
+    if not rules:
+        print("No 'data' array found in JSON.")
+        return
 
-    # Prepare output
-    rows = []
-    for rule in rules:
-        # Navigate into saved object structure: adjust based on actual structure
-        attrs = rule.get('alert', {}).get('attributes') if 'alert' in rule else rule.get('attributes')
-        if not attrs:
-            continue
+    # 3. Prepare CSV
+    with open(output_csv, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["name", "actions"])
 
-        name = attrs.get('name', '')
-        # Actions might be under attrs['actions']—adjust path if different
-        actions = attrs.get('actions', [])
-        # Store as JSON string to preserve structure
-        actions_str = json.dumps(actions)
+        # 4. Iterate through rules
+        for entry in rules:
+            alert = entry.get("alert", {})
+            attrs = alert.get("attributes", {})
+            name = attrs.get("name", "")
 
-        rows.append({'name': name, 'actions': actions_str})
+            # 5. Extract actions, serialize as JSON string
+            actions_list = attrs.get("actions", [])
+            actions_str = json.dumps(actions_list, ensure_ascii=False)
 
-    # Write CSV
-    with open(output_csv, 'w', encoding='utf-8', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=['name', 'actions'])
-        writer.writeheader()
-        writer.writerows(rows)
+            writer.writerow([name, actions_str])
 
-if __name__ == '__main__':
-    extract_rules_to_csv('response.json', 'rules_actions.csv')
-    print("✅ Exported rule names and actions to rules_actions.csv")
+    print(f"✅ Extracted {len(rules)} rules to '{output_csv}'")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print("Usage: python extract_rules.py <input.json> <output.csv>")
+        sys.exit(1)
+
+    extract_rules_to_csv(sys.argv[1], sys.argv[2])
