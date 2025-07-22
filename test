@@ -36,3 +36,7 @@ Disk usage on {{context.node}} returned the following:
 
 Disk usage on instance-0000000146:92
 
+
+
+Disk usage on {{context.node.split(':')[0]}} is currently {{context.node.split(':')[1]}}% Please validate and take action
+
