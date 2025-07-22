@@ -29,3 +29,5 @@ Disk usage on {{context.node.split(':')[0]}} is {{context.node.split(':')[1]}}% 
 Disk usage alert is firing for node instance-0000000163 in cluster: HedgeServ QA (fa64ad). Verify disk usage level of node.
 
 Disk usage on is % - Please validate and take action!
+
+Disk usage on is currently Please validate and take action
