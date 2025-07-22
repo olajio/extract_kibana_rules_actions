@@ -31,3 +31,8 @@ Disk usage alert is firing for node instance-0000000163 in cluster: HedgeServ QA
 Disk usage on is % - Please validate and take action!
 
 Disk usage on is currently Please validate and take action
+
+Disk usage on {{context.node}} returned the following:
+
+Disk usage on instance-0000000146:92
+
