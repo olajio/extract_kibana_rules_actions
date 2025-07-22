@@ -13,3 +13,7 @@ Disk usage on {{context.node.split(':')[0]}} is {{context.node.split(':')[1]}}% 
   ],
   "actions": [...]
 }
+
+
+
+Disk usage on {{state.documents.0.node.name}} is currently {{state.documents.0.system.filesystem.used.pct | formatNumber "0.00%"}} Please validate and take action
