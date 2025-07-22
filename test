@@ -50,3 +50,16 @@ Disk usage on {{context.node}} is {{context.diskUsage}}% — Please validate and
 <p>Please validate and take action.</p>
 
 
+
+{
+  "internalShortMessage": "Disk usage alert is firing for node instance-0000000144 in cluster: HedgeServ InfoSec (1fc795). Verify disk usage level of node.",
+  "internalFullMessage": "Disk usage alert is firing for node instance-0000000144 in cluster: HedgeServ InfoSec (1fc795). Verify disk usage level of node.",
+  "state": "firing",
+  "nodes": "instance-0000000144:69",
+  "count": 1,
+  "node": "instance-0000000144:69",
+  "clusterName": "HedgeServ InfoSec (1fc795)",
+  "action": "[View node](https://f75b530e5a414cb9a06e17ea014081b5.us-east-1.aws.found.io/app/monitoring#/elasticsearch/nodes/zVarG16fSdK2PGYf0BcLIQ?_g=(cluster_uuid:'Bl-5Ci6EQKa6uy49vUXXFQ'))",
+  "actionPlain": "Verify disk usage level of node."
+}
+
