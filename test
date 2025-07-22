@@ -40,3 +40,7 @@ Disk usage on instance-0000000146:92
 
 Disk usage on {{context.node.split(':')[0]}} is currently {{context.node.split(':')[1]}}% Please validate and take action
 
+
+Disk usage on {{context.node.substring 0 (context.node.indexOf ':')}} is currently {{context.node.substring (context.node.indexOf ':' + 1)}}% Please validate and take action
+
+
